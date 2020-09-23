@@ -1,0 +1,84 @@
+------------ Table creation ------------
+
+CREATE TABLE Products(
+  p_id int NOT NULL AUTO_INCREMENT,
+  name varchar(100),
+  description varchar(1000),
+  PRIMARY KEY (p_id)
+);
+
+CREATE TABLE Variants(
+  v_id int NOT NULL AUTO_INCREMENT,
+  variant varchar(100),
+  PRIMARY KEY (v_id)
+);
+
+CREATE TABLE VariantValue(
+  vv_id int NOT NULL AUTO_INCREMENT,
+  v_id int,
+  value varchar(100),
+  PRIMARY KEY (vv_id),
+  FOREIGN KEY (v_id) REFERENCES Variants (v_id) 
+);
+
+CREATE TABLE ProductVariant(
+  pv_id int NOT NULL AUTO_INCREMENT,
+  p_id int,
+  modelName varchar(100),
+  price decimal(10,2),
+  PRIMARY KEY (pv_id),
+  FOREIGN KEY (p_id) REFERENCES Products (p_id) 
+);
+
+CREATE TABLE ProductDetails(
+  pd_id int NOT NULL AUTO_INCREMENT,
+  pv_id int,
+  vv_id int,
+  quantity varchar(100),
+  PRIMARY KEY (pd_id),
+  FOREIGN KEY (pv_id) REFERENCES ProductVariant (pv_id),
+  FOREIGN KEY (vv_id) REFERENCES VariantValue (vv_id)
+);
+CREATE TABLE Media(
+  m_id int NOT NULL AUTO_INCREMENT,
+  pd_id int,
+  fileName varchar(100),
+  PRIMARY KEY (m_id),
+  FOREIGN KEY (pd_id) REFERENCES ProductDetails (pd_id)
+);
+
+----------- Static Values Insertion -----------------
+
+INSERT INTO Variants
+VALUES (NULL, "Color");
+
+Insert into Variants values (NULL, "Size");
+
+
+----------- Product Insertion ----------------------
+
+- Add Product NAME and DESCRIPTION in Product table
+insert into Products values (NULL, "Shirt", "Casual Beach Shirt");
+
+- Use id of Product table to insert MODEL and PRICE in ProductVariant
+insert into ProductVariant values (NULL, last_insert_id(), "shirt101", 499.00);
+
+var $pv_id = mysqli_insert_id(); //php alternative for getting id from latest sql query
+
+- variant values are static(color =1). We can use these values as v_id 
+insert into VariantValue values (NULL, 1, "Black");
+
+- Inserting QUANTITY of the "black" variant of product
+insert into ProductDetails values (NULL, $pv_id, last_insert_id(), 12);
+
+- Save value of pd_id for entering multiple images
+var $pd_id = mysqli_insert_id();
+insert into Media values (NULL, $pd_id, image1.png);
+insert into Media values (NULL, $pd_id, image2.png);
+insert into Media values (NULL, $pd_id, image3.png);
+
+
+
+
+
+
